@@ -1,0 +1,15 @@
+# Enable access logs on the single egress waypoint for debugging.
+---
+apiVersion: telemetry.istio.io/v1
+kind: Telemetry
+metadata:
+  name: waypoint-accesslogging
+  namespace: istio-egress
+spec:
+  targetRefs:
+    - kind: Gateway
+      name: waypoint
+      group: gateway.networking.k8s.io
+  accessLogging:
+    - providers:
+        - name: envoy

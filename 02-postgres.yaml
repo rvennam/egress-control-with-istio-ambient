@@ -1,0 +1,106 @@
+# Two PostgreSQL instances in the db namespace (outside the ambient mesh).
+# These simulate "external" databases like RDS.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-1
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-1
+  template:
+    metadata:
+      labels:
+        app: postgres-1
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "testpass1"
+            - name: POSTGRES_DB
+              value: "demodb1"
+            - name: POSTGRES_USER
+              value: "admin"
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "admin"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-1
+  namespace: db
+spec:
+  type: LoadBalancer
+  selector:
+    app: postgres-1
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: tcp-postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-2
+  namespace: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-2
+  template:
+    metadata:
+      labels:
+        app: postgres-2
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "testpass2"
+            - name: POSTGRES_DB
+              value: "demodb2"
+            - name: POSTGRES_USER
+              value: "admin"
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "admin"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-2
+  namespace: db
+spec:
+  type: LoadBalancer
+  selector:
+    app: postgres-2
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+      name: tcp-postgres

@@ -1,0 +1,36 @@
+# Test client pods in each demo namespace.
+# Uses postgres:16-alpine for pg_isready and psql.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+  namespace: rds-demo-1
+  labels:
+    app: test-client
+spec:
+  containers:
+    - name: client
+      image: postgres:16-alpine
+      command: ["sleep", "infinity"]
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "50m"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+  namespace: rds-demo-2
+  labels:
+    app: test-client
+spec:
+  containers:
+    - name: client
+      image: postgres:16-alpine
+      command: ["sleep", "infinity"]
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "50m"

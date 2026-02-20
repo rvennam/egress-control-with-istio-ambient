@@ -1,0 +1,18 @@
+# Single egress waypoint shared by all external ServiceEntries.
+# Per-destination access control is enforced by targeting AuthorizationPolicies
+# at individual ServiceEntries, not by creating separate waypoints.
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: waypoint
+  namespace: istio-egress
+spec:
+  gatewayClassName: istio-waypoint
+  listeners:
+    - name: mesh
+      port: 15008
+      protocol: HBONE
+      allowedRoutes:
+        namespaces:
+          from: All

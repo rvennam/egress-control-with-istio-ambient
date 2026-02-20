@@ -1,0 +1,30 @@
+# Namespaces for the single-waypoint egress test.
+# - db: NOT ambient-enrolled (simulates "external" databases)
+# - rds-demo-1, rds-demo-2: ambient-enrolled client namespaces
+# - istio-egress: ambient-enrolled, hosts the shared egress waypoint
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: db
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rds-demo-1
+  labels:
+    istio.io/dataplane-mode: ambient
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rds-demo-2
+  labels:
+    istio.io/dataplane-mode: ambient
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: istio-egress
+  labels:
+    istio.io/dataplane-mode: ambient

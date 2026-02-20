@@ -1,0 +1,38 @@
+# Both ServiceEntries are bound to the SAME waypoint.
+# Hosts use nip.io names derived from LoadBalancer IPs so they are
+# truly "external" from the mesh's perspective.
+# Use envsubst or the run-test.sh script to fill in variables.
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: postgres-1
+  namespace: istio-egress
+  labels:
+    istio.io/use-waypoint: waypoint
+spec:
+  hosts:
+    - ${PG1_IP}.nip.io
+  location: MESH_EXTERNAL
+  ports:
+    - number: 5432
+      name: tcp-postgres
+      protocol: TCP
+  resolution: DNS
+---
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: postgres-2
+  namespace: istio-egress
+  labels:
+    istio.io/use-waypoint: waypoint
+spec:
+  hosts:
+    - ${PG2_IP}.nip.io
+  location: MESH_EXTERNAL
+  ports:
+    - number: 5432
+      name: tcp-postgres
+      protocol: TCP
+  resolution: DNS

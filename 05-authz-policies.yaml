@@ -1,0 +1,44 @@
+# Per-ServiceEntry AuthorizationPolicies on a single shared waypoint.
+# Each policy targets a specific ServiceEntry (not the Gateway), so the waypoint
+# enforces different rules depending on which destination the traffic is for.
+#
+# - postgres-1: only reachable from rds-demo-1
+# - postgres-2: only reachable from rds-demo-2
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-postgres-1-from-demo-1
+  namespace: istio-egress
+spec:
+  targetRefs:
+    - kind: ServiceEntry
+      group: networking.istio.io
+      name: postgres-1
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["rds-demo-1"]
+      to:
+        - operation:
+            ports: ["5432"]
+---
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-postgres-2-from-demo-2
+  namespace: istio-egress
+spec:
+  targetRefs:
+    - kind: ServiceEntry
+      group: networking.istio.io
+      name: postgres-2
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["rds-demo-2"]
+      to:
+        - operation:
+            ports: ["5432"]
